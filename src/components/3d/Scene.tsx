@@ -3,9 +3,10 @@ import { Suspense, useState, useEffect } from "react";
 
 type SceneProps = {
   children: React.ReactNode;
+  className?: string;
 };
 
-export function Scene({ children }: SceneProps) {
+export function Scene({ children, className }: SceneProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -17,12 +18,12 @@ export function Scene({ children }: SceneProps) {
 
   if (!mounted) {
     return (
-      <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+      <div className={className} />
     );
   }
 
   return (
-    <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+    <div className={className}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 100 }}
         dpr={[1, 2]}
