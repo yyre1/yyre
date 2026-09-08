@@ -32,8 +32,6 @@ function patchFiles(dir) {
       }
 
       // Fix 2: child.object.type check in dispose logic
-      // Note: We need to be careful with the regex to match the minified versions too if possible,
-      // but usually the pattern is similar.
       if (content.includes("child.object.type !== 'Scene'")) {
         console.log(`Patching dispose crash in: ${fullPath}`);
         content = content.replace(
@@ -49,6 +47,17 @@ function patchFiles(dir) {
         content = content.replace(
           /disposeOnIdle\(child\.object\)/g,
           "if (child.object) disposeOnIdle(child.object)"
+        );
+        changed = true;
+      }
+
+      // Fix 4: Ignore data- and aria- attributes in applyProps
+      // This prevents R3F from trying to pierce props like "data-dyad-name"
+      if (content.includes("if (RESERVED_PROPS.includes(prop)) continue;")) {
+        console.log(`Patching applyProps data-attribute crash in: ${fullPath}`);
+        content = content.replace(
+          /if \(RESERVED_PROPS\.includes\(prop\)\) continue;/g,
+          "if (RESERVED_PROPS.includes(prop) || prop.startsWith('data-') || prop.startsWith('aria-')) continue;"
         );
         changed = true;
       }
