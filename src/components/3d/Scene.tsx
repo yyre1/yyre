@@ -1,24 +1,38 @@
-import { Canvas, type CanvasProps } from "@react-three/fiber";
-import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Suspense, useState, useEffect } from "react";
 
-type SceneProps = Omit<CanvasProps, "children"> & {
+type SceneProps = {
   children: React.ReactNode;
 };
 
-export function Scene({ children, className, style, ...canvasProps }: SceneProps) {
+export function Scene({ children }: SceneProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      setMounted(false);
+    };
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+    );
+  }
+
   return (
-    <Canvas
-      className={className}
-      style={style}
-      camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 100 }}
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true }}
-      performance={{ min: 0.5 }}
-      {...canvasProps}
-    >
-      <Suspense fallback={null}>
-        {children}
-      </Suspense>
-    </Canvas>
+    <div style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 50, near: 0.1, far: 100 }}
+        dpr={[1, 2]}
+        gl={{ antialias: true, alpha: true }}
+        performance={{ min: 0.5 }}
+      >
+        <Suspense fallback={null}>
+          {children}
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }
