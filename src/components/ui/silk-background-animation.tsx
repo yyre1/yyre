@@ -1,16 +1,14 @@
-'use client';
+import { useEffect, useRef, useState } from 'react';
 
-import React, { useEffect, useRef } from 'react';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
-
-interface SilkBackgroundAnimationProps {
-  className?: string;
-}
-
-export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = ({ className = '' }) => {
+export const Component = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
-  const reducedMotion = useReducedMotion();
+  const animationRef = useRef<number>(undefined);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,14 +23,8 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
     const noiseIntensity = 0.8;
 
     const resizeCanvas = () => {
-      const rect = canvas.parentElement?.getBoundingClientRect();
-      if (rect) {
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-      } else {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     };
 
     resizeCanvas();
@@ -48,27 +40,22 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
 
     const animate = () => {
       const { width, height } = canvas;
-      if (width === 0 || height === 0) {
-        animationRef.current = requestAnimationFrame(animate);
-        return;
-      }
       
       // Create gradient background
       const gradient = ctx.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, '#121212');
-      gradient.addColorStop(0.5, '#1a1a1a');
-      gradient.addColorStop(1, '#121212');
+      gradient.addColorStop(0, '#1a1a1a');
+      gradient.addColorStop(0.5, '#2a2a2a');
+      gradient.addColorStop(1, '#1a1a1a');
       
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Create silk-like pattern (optimized step size for performance)
+      // Create silk-like pattern
       const imageData = ctx.createImageData(width, height);
       const data = imageData.data;
 
-      const step = 3; // Optimized for performance in hero section
-      for (let x = 0; x < width; x += step) {
-        for (let y = 0; y < height; y += step) {
+      for (let x = 0; x < width; x += 2) {
+        for (let y = 0; y < height; y += 2) {
           const u = (x / width) * scale;
           const v = (y / height) * scale;
           
@@ -86,23 +73,18 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
           const rnd = noise(x, y);
           const intensity = Math.max(0, pattern - rnd / 15.0 * noiseIntensity);
           
-          // Purple-gray silk color matching high-fashion aesthetic
+          // Purple-gray silk color
           const r = Math.floor(123 * intensity);
           const g = Math.floor(116 * intensity);
           const b = Math.floor(129 * intensity);
           const a = 255;
 
-          // Fill block for step size
-          for (let dx = 0; dx < step && x + dx < width; dx++) {
-            for (let dy = 0; dy < step && y + dy < height; dy++) {
-              const index = ((y + dy) * width + (x + dx)) * 4;
-              if (index < data.length) {
-                data[index] = r;
-                data[index + 1] = g;
-                data[index + 2] = b;
-                data[index + 3] = a;
-              }
-            }
+          const index = (y * width + x) * 4;
+          if (index < data.length) {
+            data[index] = r;
+            data[index + 1] = g;
+            data[index + 2] = b;
+            data[index + 3] = a;
           }
         }
       }
@@ -114,16 +96,14 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
         width / 2, height / 2, 0,
         width / 2, height / 2, Math.max(width, height) / 2
       );
-      overlayGradient.addColorStop(0, 'rgba(0, 0, 0, 0.2)');
-      overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+      overlayGradient.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
+      overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
       
       ctx.fillStyle = overlayGradient;
       ctx.fillRect(0, 0, width, height);
 
-      if (!reducedMotion) {
-        time += 1;
-        animationRef.current = requestAnimationFrame(animate);
-      }
+      time += 1;
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();
@@ -134,15 +114,22 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [reducedMotion]);
+  }, []);
 
   return (
     <>
       <style>{`
-        @keyframes heroFadeInUp {
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+        }
+        
+        @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(1.5rem);
+            transform: translateY(2rem);
           }
           to {
             opacity: 1;
@@ -150,15 +137,111 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
           }
         }
         
-        .hero-animate-in {
-          animation: heroFadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        @keyframes fadeInUpDelay {
+          from {
+            opacity: 0;
+            transform: translateY(1rem);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fadeInCorner {
+          from {
+            opacity: 0;
+            transform: translateY(-1rem);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fadeInUp 1s ease-out forwards;
+        }
+        
+        .animate-fade-in-up-delay {
+          animation: fadeInUpDelay 1s ease-out 0.3s forwards;
+        }
+        
+        .animate-fade-in-corner {
+          animation: fadeInCorner 1s ease-out 0.9s forwards;
+        }
+        
+        .silk-canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
         }
       `}</style>
-      <canvas 
-        ref={canvasRef}
-        className={`absolute inset-0 w-full h-full pointer-events-none z-0 ${className}`}
-        aria-hidden="true"
-      />
+      
+      <div className="relative h-screen w-full overflow-hidden bg-black">
+        {/* Animated Silk Background */}
+        <canvas 
+          ref={canvasRef}
+          className="silk-canvas"
+        />
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
+
+        {/* Content */}
+        <div className="relative z-20 flex h-full items-center justify-center">
+          <div className="text-center px-8">
+            {/* Main Title */}
+            <h1 
+              className={`
+                text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem] 
+                font-light tracking-[-0.05em] leading-none
+                text-white mix-blend-difference
+                opacity-0
+                ${isLoaded ? 'animate-fade-in-up' : ''}
+              `}
+              style={{ 
+                textShadow: '0 0 40px rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              silk
+            </h1>
+
+            {/* Subtitle */}
+            <div 
+              className={`
+                mt-8 text-lg md:text-xl lg:text-2xl 
+                font-extralight tracking-[0.2em] uppercase
+                text-gray-300/80 mix-blend-overlay
+                opacity-0
+                ${isLoaded ? 'animate-fade-in-up-delay' : ''}
+              `}
+            >
+              <span className="inline-block">flowing</span>
+              <span className="mx-4 text-gray-500">•</span>
+              <span className="inline-block">texture</span>
+              <span className="mx-4 text-gray-500">•</span>
+              <span className="inline-block">art</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Corner Accent */}
+        <div 
+          className={`
+            absolute top-8 left-8 z-30
+            text-xs font-light tracking-widest uppercase
+            text-gray-500/40 mix-blend-overlay
+            opacity-0
+            ${isLoaded ? 'animate-fade-in-corner' : ''}
+          `}
+        >
+          2025
+        </div>
+      </div>
     </>
   );
 };
