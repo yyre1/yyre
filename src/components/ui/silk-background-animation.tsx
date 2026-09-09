@@ -1,247 +1,219 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-export const Component = () => {
+interface SilkBackgroundAnimationProps {
+  className?: string;
+  intensity?: number;
+}
+
+export function SilkBackgroundAnimation({ className, intensity = 1 }: SilkBackgroundAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>(undefined);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+  const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0, active: false });
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let time = 0;
-    const speed = 0.02;
-    const scale = 2;
-    const noiseIntensity = 0.8;
+    let animationFrameId: number;
+    let width = 0;
+    let height = 0;
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    interface Ribbon {
+      points: { x: number; y: number }[];
+      color: string;
+      speed: number;
+      amplitude: number;
+      phase: number;
+      frequency: number;
+      thickness: number;
+      offsetY: number;
+    }
+
+    let ribbons: Ribbon[] = [];
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+      initRibbons();
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Simple noise function
-    const noise = (x: number, y: number) => {
-      const G = 2.71828;
-      const rx = G * Math.sin(G * x);
-      const ry = G * Math.sin(G * y);
-      return (rx * ry * (1 + x)) % 1;
+    const initRibbons = () => {
+      // Create a sophisticated, luxurious silk color palette with shades of gray, slate, violet, and deep charcoal/purple accents
+      ribbons = [
+        {
+          points: [],
+          color: "rgba(167, 139, 250, 0.07)", // Luxurious soft violet
+          speed: 0.0008,
+          amplitude: height * 0.35,
+          phase: 0,
+          frequency: 0.002,
+          thickness: 1.5,
+          offsetY: height * 0.5,
+        },
+        {
+          points: [],
+          color: "rgba(226, 232, 240, 0.04)", // Soft slate gray
+          speed: 0.0005,
+          amplitude: height * 0.28,
+          phase: Math.PI / 4,
+          frequency: 0.0015,
+          thickness: 1.0,
+          offsetY: height * 0.45,
+        },
+        {
+          points: [],
+          color: "rgba(139, 92, 246, 0.05)", // Deeper lavender/purple accent
+          speed: 0.001,
+          amplitude: height * 0.4,
+          phase: Math.PI / 2,
+          frequency: 0.0025,
+          thickness: 2.0,
+          offsetY: height * 0.55,
+        },
+        {
+          points: [],
+          color: "rgba(255, 255, 255, 0.025)", // White silk sheen highlight
+          speed: 0.0004,
+          amplitude: height * 0.2,
+          phase: Math.PI / 1.5,
+          frequency: 0.001,
+          thickness: 0.75,
+          offsetY: height * 0.5,
+        },
+      ];
     };
 
-    const animate = () => {
-      const { width, height } = canvas;
-      
-      // Create gradient background
-      const gradient = ctx.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, '#1a1a1a');
-      gradient.addColorStop(0.5, '#2a2a2a');
-      gradient.addColorStop(1, '#1a1a1a');
-      
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseRef.current.targetX = e.clientX - rect.left;
+      mouseRef.current.targetY = e.clientY - rect.top;
+      mouseRef.current.active = true;
+    };
 
-      // Create silk-like pattern
-      const imageData = ctx.createImageData(width, height);
-      const data = imageData.data;
+    const handleMouseLeave = () => {
+      mouseRef.current.active = false;
+    };
 
-      for (let x = 0; x < width; x += 2) {
-        for (let y = 0; y < height; y += 2) {
-          const u = (x / width) * scale;
-          const v = (y / height) * scale;
+    const drawRibbon = (ribbon: Ribbon, time: number) => {
+      ctx.beginPath();
+      ctx.lineWidth = ribbon.thickness;
+      ctx.strokeStyle = ribbon.color;
+
+      const segments = 60; // Smooth resolution
+      const step = width / segments;
+
+      // Mouse interactive wave attraction calculation
+      const mouse = mouseRef.current;
+      // Smoothly interpolate mouse position to prevent jarring jumps
+      mouse.x += (mouse.targetX - mouse.x) * 0.08;
+      mouse.y += (mouse.targetY - mouse.y) * 0.08;
+
+      for (let i = 0; i <= segments; i++) {
+        const x = i * step;
+
+        // Elegant flowing math
+        const wave1 = Math.sin(x * ribbon.frequency + ribbon.phase + time * ribbon.speed * 10);
+        const wave2 = Math.cos(x * (ribbon.frequency * 1.6) - ribbon.phase + time * ribbon.speed * 8);
+        const wave3 = Math.sin((x + time * 15) * 0.0008) * 0.5;
+
+        let baseOffset = (wave1 + wave2 + wave3) * ribbon.amplitude * intensity;
+
+        // Apply interactive mouse disturbance
+        if (mouse.active) {
+          const dx = x - mouse.x;
+          const dist = Math.abs(dx);
+          const maxDist = width * 0.25; // Area of influence
           
-          const tOffset = speed * time;
-          let tex_x = u;
-          let tex_y = v + 0.03 * Math.sin(8.0 * tex_x - tOffset);
-
-          const pattern = 0.6 + 0.4 * Math.sin(
-            5.0 * (tex_x + tex_y + 
-              Math.cos(3.0 * tex_x + 5.0 * tex_y) + 
-              0.02 * tOffset) +
-            Math.sin(20.0 * (tex_x + tex_y - 0.1 * tOffset))
-          );
-
-          const rnd = noise(x, y);
-          const intensity = Math.max(0, pattern - rnd / 15.0 * noiseIntensity);
-          
-          // Purple-gray silk color
-          const r = Math.floor(123 * intensity);
-          const g = Math.floor(116 * intensity);
-          const b = Math.floor(129 * intensity);
-          const a = 255;
-
-          const index = (y * width + x) * 4;
-          if (index < data.length) {
-            data[index] = r;
-            data[index + 1] = g;
-            data[index + 2] = b;
-            data[index + 3] = a;
+          if (dist < maxDist) {
+            // Smooth bell curve force
+            const force = (1 - dist / maxDist) ** 2;
+            const targetDelta = (mouse.y - ribbon.offsetY) * 0.35 * force;
+            baseOffset += targetDelta;
           }
+        }
+
+        const y = ribbon.offsetY + baseOffset;
+
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          const prevX = (i - 1) * step;
+          const prevWave1 = Math.sin(prevX * ribbon.frequency + ribbon.phase + time * ribbon.speed * 10);
+          const prevWave2 = Math.cos(prevX * (ribbon.frequency * 1.6) - ribbon.phase + time * ribbon.speed * 8);
+          const prevWave3 = Math.sin((prevX + time * 15) * 0.0008) * 0.5;
+          
+          let prevBaseOffset = (prevWave1 + prevWave2 + prevWave3) * ribbon.amplitude * intensity;
+
+          if (mouse.active) {
+            const dx = prevX - mouse.x;
+            const dist = Math.abs(dx);
+            const maxDist = width * 0.25;
+            if (dist < maxDist) {
+              const force = (1 - dist / maxDist) ** 2;
+              const targetDelta = (mouse.y - ribbon.offsetY) * 0.35 * force;
+              prevBaseOffset += targetDelta;
+            }
+          }
+
+          const prevY = ribbon.offsetY + prevBaseOffset;
+
+          const xc = (prevX + x) / 2;
+          const yc = (prevY + y) / 2;
+          ctx.quadraticCurveTo(prevX, prevY, xc, yc);
         }
       }
 
-      ctx.putImageData(imageData, 0, 0);
-
-      // Add subtle overlay for depth
-      const overlayGradient = ctx.createRadialGradient(
-        width / 2, height / 2, 0,
-        width / 2, height / 2, Math.max(width, height) / 2
-      );
-      overlayGradient.addColorStop(0, 'rgba(0, 0, 0, 0.1)');
-      overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
-      
-      ctx.fillStyle = overlayGradient;
-      ctx.fillRect(0, 0, width, height);
-
-      time += 1;
-      animationRef.current = requestAnimationFrame(animate);
+      ctx.stroke();
     };
 
-    animate();
+    let startTime = Date.now();
+
+    const render = () => {
+      // Use transparent/subtle color overlay clearing to allow background 3D canvas peek-through
+      ctx.clearRect(0, 0, width, height);
+
+      const time = Date.now() - startTime;
+      ribbons.forEach((ribbon) => {
+        drawRibbon(ribbon, reducedMotion ? 0 : time);
+      });
+
+      if (!reducedMotion) {
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+    
+    render();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
       }
     };
-  }, []);
+  }, [reducedMotion, intensity]);
 
   return (
-    <>
-      <style>{`
-        html, body {
-          margin: 0;
-          padding: 0;
-          overflow-x: hidden;
-          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(2rem);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fadeInUpDelay {
-          from {
-            opacity: 0;
-            transform: translateY(1rem);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fadeInCorner {
-          from {
-            opacity: 0;
-            transform: translateY(-1rem);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 1s ease-out forwards;
-        }
-        
-        .animate-fade-in-up-delay {
-          animation: fadeInUpDelay 1s ease-out 0.3s forwards;
-        }
-        
-        .animate-fade-in-corner {
-          animation: fadeInCorner 1s ease-out 0.9s forwards;
-        }
-        
-        .silk-canvas {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 0;
-        }
-      `}</style>
-      
-      <div className="relative h-screen w-full overflow-hidden bg-black">
-        {/* Animated Silk Background */}
-        <canvas 
-          ref={canvasRef}
-          className="silk-canvas"
-        />
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
-
-        {/* Content */}
-        <div className="relative z-20 flex h-full items-center justify-center">
-          <div className="text-center px-8">
-            {/* Main Title */}
-            <h1 
-              className={`
-                text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem] 
-                font-light tracking-[-0.05em] leading-none
-                text-white mix-blend-difference
-                opacity-0
-                ${isLoaded ? 'animate-fade-in-up' : ''}
-              `}
-              style={{ 
-                textShadow: '0 0 40px rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              silk
-            </h1>
-
-            {/* Subtitle */}
-            <div 
-              className={`
-                mt-8 text-lg md:text-xl lg:text-2xl 
-                font-extralight tracking-[0.2em] uppercase
-                text-gray-300/80 mix-blend-overlay
-                opacity-0
-                ${isLoaded ? 'animate-fade-in-up-delay' : ''}
-              `}
-            >
-              <span className="inline-block">flowing</span>
-              <span className="mx-4 text-gray-500">•</span>
-              <span className="inline-block">texture</span>
-              <span className="mx-4 text-gray-500">•</span>
-              <span className="inline-block">art</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Corner Accent */}
-        <div 
-          className={`
-            absolute top-8 left-8 z-30
-            text-xs font-light tracking-widest uppercase
-            text-gray-500/40 mix-blend-overlay
-            opacity-0
-            ${isLoaded ? 'animate-fade-in-corner' : ''}
-          `}
-        >
-          2025
-        </div>
-      </div>
-    </>
+    <canvas
+      ref={canvasRef}
+      className={cn("w-full h-full absolute inset-0 pointer-events-none", className)}
+      aria-hidden="true"
+    />
   );
-};
+}
