@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 interface SilkBackgroundAnimationProps {
   className?: string;
@@ -10,7 +9,6 @@ interface SilkBackgroundAnimationProps {
 export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = ({ className = '' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
-  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,13 +23,19 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
     const noiseIntensity = 0.8;
 
     const resizeCanvas = () => {
+      // Scale down canvas resolution slightly to maintain 60FPS on high-DPI displays
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const rect = canvas.parentElement?.getBoundingClientRect();
       if (rect) {
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
       } else {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
       }
     };
 
@@ -62,19 +66,20 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Create silk-like pattern (optimized step size for performance)
+      // Create silk-like pattern with solid pixel step size for high frame rate
       const imageData = ctx.createImageData(width, height);
       const data = imageData.data;
 
-      const step = 3; // Optimized for performance in hero section
+      // Draw at a performance-friendly resolution step
+      const step = 4;
       for (let x = 0; x < width; x += step) {
         for (let y = 0; y < height; y += step) {
           const u = (x / width) * scale;
           const v = (y / height) * scale;
           
           const tOffset = speed * time;
-          let tex_x = u;
-          let tex_y = v + 0.03 * Math.sin(8.0 * tex_x - tOffset);
+          const tex_x = u;
+          const tex_y = v + 0.03 * Math.sin(8.0 * tex_x - tOffset);
 
           const pattern = 0.6 + 0.4 * Math.sin(
             5.0 * (tex_x + tex_y + 
@@ -86,13 +91,12 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
           const rnd = noise(x, y);
           const intensity = Math.max(0, pattern - rnd / 15.0 * noiseIntensity);
           
-          // Purple-gray silk color matching high-fashion aesthetic
           const r = Math.floor(123 * intensity);
           const g = Math.floor(116 * intensity);
           const b = Math.floor(129 * intensity);
           const a = 255;
 
-          // Fill block for step size
+          // Fill pixel block
           for (let dx = 0; dx < step && x + dx < width; dx++) {
             for (let dy = 0; dy < step && y + dy < height; dy++) {
               const index = ((y + dy) * width + (x + dx)) * 4;
@@ -120,10 +124,8 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
       ctx.fillStyle = overlayGradient;
       ctx.fillRect(0, 0, width, height);
 
-      if (!reducedMotion) {
-        time += 1;
-        animationRef.current = requestAnimationFrame(animate);
-      }
+      time += 1;
+      animationRef.current = requestAnimationFrame(animate);
     };
 
     animate();
@@ -134,31 +136,13 @@ export const SilkBackgroundAnimation: React.FC<SilkBackgroundAnimationProps> = (
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [reducedMotion]);
+  }, []);
 
   return (
-    <>
-      <style>{`
-        @keyframes heroFadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(1.5rem);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .hero-animate-in {
-          animation: heroFadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
-      <canvas 
-        ref={canvasRef}
-        className={`absolute inset-0 w-full h-full pointer-events-none z-0 ${className}`}
-        aria-hidden="true"
-      />
-    </>
+    <canvas 
+      ref={canvasRef}
+      className={`absolute inset-0 w-full h-full pointer-events-none z-0 ${className}`}
+      aria-hidden="true"
+    />
   );
 };
