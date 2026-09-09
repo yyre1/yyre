@@ -1,114 +1,118 @@
-import { useEffect, useState } from "react";
-import { ArrowUpRight, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { SilkBackgroundAnimation } from "./ui/silk-background-animation";
+import React, { useEffect, useState } from 'react';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { SilkBackgroundAnimation } from '@/components/ui/silk-background-animation';
+import { cn } from '@/lib/utils';
 
-export function Hero() {
-  const [isMounted, setIsMounted] = useState(false);
+interface HeroProps {
+  className?: string;
+}
+
+export const Hero: React.FC<HeroProps> = ({ className }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Elegant sequential fade-in delay triggered on mount
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 100);
+    const timer = setTimeout(() => setIsLoaded(true), 150);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <section className="relative w-full min-h-[100dvh] flex flex-col justify-between overflow-hidden bg-transparent pt-32 pb-12 px-6 md:px-12 lg:px-20 z-10 select-none">
-      
-      {/* 1. Silk Background canvas animation layer confined strictly to the Hero boundary */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <SilkBackgroundAnimation className="opacity-55 scale-105" intensity={1.1} />
-        {/* Subtle vignette/radial shadow gradient layer to enhance high-fashion high-contrast typography readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/40 via-neutral-950/10 to-neutral-950 z-10" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(10,10,10,0.8)_100%)] z-10" />
-      </div>
+    <section 
+      aria-label="Hero Section"
+      className={cn(
+        "relative min-h-[100svh] w-full flex items-center justify-center overflow-hidden bg-neutral-950 text-white",
+        className
+      )}
+    >
+      {/* 1. Silk Animated Background */}
+      <SilkBackgroundAnimation />
 
-      {/* 2. Main Hero Content Layout */}
-      <div className="relative z-20 flex-1 flex flex-col justify-center max-w-5xl mx-auto w-full text-center md:text-left">
+      {/* 2. Subtle Depth Overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-black/70 pointer-events-none" />
+
+      {/* 3. Hero Content */}
+      <div className="relative z-20 max-w-5xl mx-auto px-6 md:px-12 text-center pt-28 pb-16 flex flex-col items-center">
         
-        {/* SMALL EYEBROW */}
-        <div
+        {/* Eyebrow / Badge */}
+        <div 
           className={cn(
-            "mb-6 transition-all duration-1000 ease-out transform",
-            isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            "inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-md mb-8 opacity-0",
+            isLoaded && "hero-animate-in"
           )}
-          style={{ transitionDelay: "200ms" }}
+          style={{ animationDelay: "100ms" }}
         >
-          <span className="inline-block tracking-[0.35em] text-[10px] md:text-xs font-light text-violet-400 uppercase bg-violet-400/5 px-4 py-1.5 rounded-full border border-violet-500/10 shadow-[0_0_15px_rgba(167,139,250,0.05)]">
-            collection 2026 • aura & form
+          <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+          <span className="text-[11px] font-light tracking-[0.25em] uppercase text-white/80">
+            Est. 2026 • The Silk Edit
           </span>
         </div>
 
-        {/* LARGE CINEMATIC PRIMARY HEADLINE */}
-        <h1
+        {/* Primary Cinematic Headline */}
+        <h1 
           className={cn(
-            "text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-[-0.02em] leading-[1.05] text-white/95 mb-8 transition-all duration-1000 ease-out transform",
-            isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            "text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-[0.05em] leading-[1.05] uppercase text-white/95 opacity-0 max-w-4xl",
+            isLoaded && "hero-animate-in"
           )}
-          style={{ transitionDelay: "450ms" }}
+          style={{ 
+            animationDelay: "300ms",
+            textShadow: '0 0 60px rgba(255, 255, 255, 0.15)'
+          }}
         >
-          Where technical <br />
-          <span className="font-extralight italic text-white/50 tracking-wide pr-2">tailoring</span> 
-          meets <br className="hidden sm:inline" />
-          fluid geometry
+          Where form <br className="hidden sm:block" />
+          <span className="font-extralight italic text-violet-200/90 lowercase font-serif">meets</span> fabric
         </h1>
 
-        {/* SUPPORTING DESCRIPTION */}
-        <p
+        {/* Supporting Description */}
+        <p 
           className={cn(
-            "max-w-xl text-sm sm:text-base md:text-lg font-light leading-relaxed text-white/45 tracking-wide mb-12 transition-all duration-1000 ease-out transform mx-auto md:mx-0",
-            isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            "mt-8 text-base md:text-lg font-light tracking-[0.15em] text-white/60 max-w-xl mx-auto leading-relaxed opacity-0",
+            isLoaded && "hero-animate-in"
           )}
-          style={{ transitionDelay: "700ms" }}
+          style={{ animationDelay: "500ms" }}
         >
-          A meticulous exploration of luxury structures and virtual silhouettes, 
-          crafted to exist in the beautiful boundary between physical presence and 3D digital form.
+          An intersection of avant-garde minimalism and tactile 3D craftsmanship. Designed for the modern aesthetic.
         </p>
 
-        {/* CTA BUTTONS */}
-        <div
+        {/* Call To Action Buttons */}
+        <div 
           className={cn(
-            "flex flex-col sm:flex-row items-center gap-4 transition-all duration-1000 ease-out transform justify-center md:justify-start",
-            isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            "mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto opacity-0",
+            isLoaded && "hero-animate-in"
           )}
-          style={{ transitionDelay: "950ms" }}
+          style={{ animationDelay: "700ms" }}
         >
-          {/* Primary CTA */}
           <button
             type="button"
-            className="group flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-white text-black text-xs tracking-[0.2em] font-normal hover:bg-neutral-200 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all duration-500 uppercase w-full sm:w-auto"
+            className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-white text-black font-light text-xs tracking-[0.25em] uppercase hover:bg-neutral-200 transition-all duration-300 shadow-xl focus:outline-none focus:ring-2 focus:ring-white/50 group"
           >
-            Enter Showroom
-            <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            Explore Collection
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
 
-          {/* Secondary CTA */}
           <button
             type="button"
-            className="group flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/10 bg-white/5 text-xs tracking-[0.2em] font-light text-white hover:bg-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all duration-500 uppercase w-full sm:w-auto"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white font-light text-xs tracking-[0.25em] uppercase hover:bg-white/15 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/30"
           >
-            Watch Film
+            View Lookbook
           </button>
         </div>
+
       </div>
 
-      {/* 3. Subtle animated scroll indicator at the bottom */}
-      <div
+      {/* Subtle Scroll Indicator */}
+      <div 
         className={cn(
-          "relative z-20 flex flex-col items-center gap-2 transition-all duration-1000 ease-out transform",
-          isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          "absolute bottom-8 left-1/2 -translate-x-1/2 z-20 text-center opacity-0 pointer-events-none flex flex-col items-center gap-2",
+          isLoaded && "hero-animate-in"
         )}
-        style={{ transitionDelay: "1200ms" }}
+        style={{ animationDelay: "900ms" }}
       >
-        <span className="text-[9px] tracking-[0.3em] text-white/20 uppercase font-light">
-          scroll to explore
+        <span className="text-[9px] tracking-[0.3em] text-white/40 uppercase">
+          scroll to discover
         </span>
-        <div className="animate-bounce text-white/30">
-          <ChevronDown className="w-4 h-4" />
+        <div className="w-4 h-7 rounded-full border border-white/20 flex items-start justify-center p-1">
+          <div className="w-1 h-1.5 bg-white/60 rounded-full animate-bounce" />
         </div>
       </div>
     </section>
   );
-}
+};
