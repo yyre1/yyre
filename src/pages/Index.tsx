@@ -1,15 +1,19 @@
 import { Scene } from "@/components/3d/Scene";
 import { SceneLighting } from "@/components/3d/SceneLighting";
 import { AnimatedCube } from "@/components/3d/AnimatedCube";
+import { Header } from "@/components/header/Header";
 
 const Index = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-neutral-950">
-      {/* 3D Canvas Background */}
+      {/* 3D Canvas Background (z-index base) */}
       <Scene className="absolute inset-0 w-full h-full">
         <SceneLighting />
         <AnimatedCube />
       </Scene>
+
+      {/* Site header sits above the 3D scene */}
+      <Header />
 
       {/* HTML Overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
