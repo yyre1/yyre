@@ -195,19 +195,19 @@ export const Component = () => {
         <div className="relative z-20 flex h-full items-center justify-center">
           <div className="text-center px-8">
             {/* Main Title */}
-            <h1 
+            <h1
               className={`
-                text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem] 
-                font-light tracking-[-0.05em] leading-none
+                text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem]
+                font-light tracking-[-0.05em] leading-none font-vip
                 text-white mix-blend-difference
                 opacity-0
                 ${isLoaded ? 'animate-fade-in-up' : ''}
               `}
-              style={{ 
+              style={{
                 textShadow: '0 0 40px rgba(255, 255, 255, 0.1)'
               }}
             >
-              silk
+              YYRE
             </h1>
 
             {/* Subtitle */}
