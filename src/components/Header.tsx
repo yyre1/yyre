@@ -97,7 +97,6 @@ export function Header() {
             href="/"
             className="flex items-center gap-3 group focus:outline-none focus:ring-1 focus:ring-white/30 rounded-md py-1 px-2"
           >
-            <img src="/favicon.png" alt="yyre logo" className="w-8 h-8 invert opacity-90 group-hover:opacity-100 transition-opacity" />
             <span className="text-xl md:text-2xl font-light tracking-[0.35em] text-white/90 group-hover:text-white transition-all duration-300 uppercase font-vip">
               YYRE
             </span>
@@ -167,7 +166,6 @@ export function Header() {
         {/* Mobile Header Inside Menu */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/favicon.png" alt="yyre logo" className="w-7 h-7 invert opacity-90" />
             <span className="text-xl font-light tracking-[0.35em] text-white/90 uppercase font-vip">
               YYRE
             </span>
