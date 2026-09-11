@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { DemoOne } from "@/components/ui/demo";
+import { IntroSection } from "@/components/sections/intro-section";
 
 const Index = () => {
   return (
@@ -18,6 +19,9 @@ const Index = () => {
       <div className="relative z-0 w-full min-h-screen">
         <DemoOne />
       </div>
+
+      {/* Section 1 — Editorial Introduction */}
+      <IntroSection />
 
     </div>
   );
