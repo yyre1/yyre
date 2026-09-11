@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-interface SilkBackgroundAnimationProps {
-  className?: string;
-  intensity?: number;
-}
-
-export const Component = ({ className = '', intensity = 1 }: SilkBackgroundAnimationProps = {}) => {
+export const Component = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -188,9 +183,9 @@ export const Component = ({ className = '', intensity = 1 }: SilkBackgroundAnima
       
       <div className="relative h-screen w-full overflow-hidden bg-black">
         {/* Animated Silk Background */}
-        <canvas
+        <canvas 
           ref={canvasRef}
-          className={`silk-canvas ${className}`}
+          className="silk-canvas"
         />
 
         {/* Gradient Overlay */}
@@ -235,7 +230,7 @@ export const Component = ({ className = '', intensity = 1 }: SilkBackgroundAnima
         </div>
 
         {/* Corner Accent */}
-        <div
+        <div 
           className={`
             absolute top-8 left-8 z-30
             text-xs font-light tracking-widest uppercase
@@ -250,5 +245,3 @@ export const Component = ({ className = '', intensity = 1 }: SilkBackgroundAnima
     </>
   );
 };
-
-export const SilkBackgroundAnimation = Component;
