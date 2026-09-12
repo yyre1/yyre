@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 
-export const Component = () => {
+interface SilkBackgroundAnimationProps {
+  className?: string;
+  intensity?: number;
+}
+
+export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgroundAnimationProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(undefined);
   const [isLoaded, setIsLoaded] = useState(false);

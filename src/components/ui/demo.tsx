@@ -1,7 +1,7 @@
-import { Component } from "@/components/ui/silk-background-animation";
+import { SilkBackgroundAnimation } from "@/components/ui/silk-background-animation";
 
 const DemoOne = () => {
-  return <Component />;
+  return <SilkBackgroundAnimation />;
 };
 
 export { DemoOne };
