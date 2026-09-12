@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+import React from 'react'
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./globals.css";
@@ -10,16 +10,8 @@ console.warn = (...args) => {
   warn(...args);
 };
 
-createRoot(document.getElementById("root")!).render(<App />);
-=======
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-)
->>>>>>> 7feb5232bc6bf69f2a63a3b8eb4aded3523b4430
+  </React.StrictMode>
+);
