@@ -23,7 +23,7 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
     if (!ctx) return;
 
     let time = 0;
-    const speed = 0.02;
+    const speed = 0.05;
     const scale = 2;
     const noiseIntensity = 0.8;
 
@@ -165,15 +165,15 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
         }
         
         .animate-fade-in-up {
-          animation: fadeInUp 1s ease-out forwards;
+          animation: fadeInUp 0.6s ease-out forwards;
         }
         
         .animate-fade-in-up-delay {
-          animation: fadeInUpDelay 1s ease-out 0.3s forwards;
+          animation: fadeInUpDelay 0.6s ease-out 0.2s forwards;
         }
         
         .animate-fade-in-corner {
-          animation: fadeInCorner 1s ease-out 0.9s forwards;
+          animation: fadeInCorner 0.6s ease-out 0.5s forwards;
         }
         
         .silk-canvas {
