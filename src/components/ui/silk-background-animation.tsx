@@ -219,7 +219,7 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
             <div
               className={`
                 mt-6 text-xl sm:text-2xl md:text-3xl lg:text-4xl
-                font-light tracking-[0.4em] uppercase font-vip
+                font-extralight tracking-[0.4em] uppercase
                 text-white/80 mix-blend-difference
                 opacity-0
                 ${isLoaded ? 'animate-fade-in-up-delay' : ''}
