@@ -216,20 +216,16 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
             </h1>
 
             {/* Subtitle */}
-            <div 
+            <div
               className={`
-                mt-8 text-lg md:text-xl lg:text-2xl 
-                font-extralight tracking-[0.2em] uppercase
-                text-gray-300/80 mix-blend-overlay
+                mt-6 text-xl sm:text-2xl md:text-3xl lg:text-4xl
+                font-light tracking-[0.4em] uppercase font-vip
+                text-white/80 mix-blend-difference
                 opacity-0
                 ${isLoaded ? 'animate-fade-in-up-delay' : ''}
               `}
             >
-              <span className="inline-block">flowing</span>
-              <span className="mx-4 text-gray-500">•</span>
-              <span className="inline-block">texture</span>
-              <span className="mx-4 text-gray-500">•</span>
-              <span className="inline-block">art</span>
+              DEPENDENCIES
             </div>
           </div>
         </div>
