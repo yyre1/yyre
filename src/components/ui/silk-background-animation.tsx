@@ -199,33 +199,46 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
         {/* Content */}
         <div className="relative z-20 flex h-full items-center justify-center">
           <div className="text-center px-8">
-            {/* Main Title */}
-            <h1
-              className={`
-                text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem]
-                font-light tracking-[-0.05em] leading-none font-vip
-                text-white mix-blend-difference
-                opacity-0
-                ${isLoaded ? 'animate-fade-in-up' : ''}
-              `}
-              style={{
-                textShadow: '0 0 40px rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              YYRE
-            </h1>
+            <div className="inline-block text-center">
+              {/* Main Title */}
+              <h1
+                className={`
+                  text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem]
+                  font-light tracking-[-0.05em] leading-none font-vip
+                  text-white mix-blend-difference
+                  opacity-0
+                  ${isLoaded ? 'animate-fade-in-up' : ''}
+                `}
+                style={{
+                  textShadow: '0 0 40px rgba(255, 255, 255, 0.1)'
+                }}
+              >
+                YYRE
+              </h1>
 
-            {/* Subtitle */}
-            <div
-              className={`
-                mt-6 text-xl sm:text-2xl md:text-3xl lg:text-4xl
-                font-light tracking-[0.4em] uppercase font-vip
-                text-white/80 mix-blend-difference
-                opacity-0
-                ${isLoaded ? 'animate-fade-in-up-delay' : ''}
-              `}
-            >
-              DEPENDENCIES
+              {/* Subtitle */}
+              <div
+                className={`
+                  mt-4 w-full flex justify-between items-center text-xs sm:text-sm md:text-base lg:text-xl
+                  font-light uppercase font-vip
+                  text-white/80 mix-blend-difference
+                  opacity-0
+                  ${isLoaded ? 'animate-fade-in-up-delay' : ''}
+                `}
+              >
+                <span>D</span>
+                <span>E</span>
+                <span>P</span>
+                <span>E</span>
+                <span>N</span>
+                <span>D</span>
+                <span>E</span>
+                <span>N</span>
+                <span>C</span>
+                <span>I</span>
+                <span>E</span>
+                <span>S</span>
+              </div>
             </div>
           </div>
         </div>
