@@ -198,11 +198,11 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
 
         {/* Content */}
         <div className="relative z-20 flex h-full items-center justify-center">
-          <div className="text-center px-8">
+          <div className="text-center px-8 w-full max-w-5xl mx-auto">
             {/* Main Title */}
             <h1
               className={`
-                text-6xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[14rem]
+                text-6xl sm:text-8xl md:text-9xl lg:text-[11rem] xl:text-[13rem]
                 font-light tracking-[-0.05em] leading-none font-vip
                 text-white mix-blend-difference
                 opacity-0
@@ -218,14 +218,16 @@ export const SilkBackgroundAnimation = ({ className, intensity = 1 }: SilkBackgr
             {/* Subtitle */}
             <div
               className={`
-                mt-6 text-xl sm:text-2xl md:text-3xl lg:text-4xl
-                font-extralight tracking-[0.4em] uppercase
-                text-white/80 mix-blend-difference
+                mt-4 w-full flex justify-between text-[10px] sm:text-xs md:text-sm lg:text-base
+                font-extralight uppercase
+                text-white/70 mix-blend-difference
                 opacity-0
                 ${isLoaded ? 'animate-fade-in-up-delay' : ''}
               `}
             >
-              DEPENDENCIES
+              {"DEPENDENCIES".split("").map((char, i) => (
+                <span key={i}>{char}</span>
+              ))}
             </div>
           </div>
         </div>
